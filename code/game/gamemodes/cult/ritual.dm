@@ -211,7 +211,7 @@ This file contains the arcane tome files.
 			if((loc.z && loc.z != ZLEVEL_STATION) || !A.blob_allowed)
 				to_chat(user, "<span class='warning'>The Geometer is not interested in lesser locations; the station is the prize!</span>")
 				return
-			var/confirm_final = alert(user, "This is the FINAL step to summon Nar-Sie, it is a long, painful ritual and the crew will be alerted to your presence", "Are you prepared for the final battle?", "My life for Nar-Sie!", "No")
+		var/confirm_final = alert(user, "This is the FINAL step to summon Nar-Sie; it is a long, painful ritual and the crew will be alerted to your presence", "Are you prepared for the final battle?", "My life for Nar-Sie!", "No")
 			if(confirm_final == "No")
 				to_chat(user, "<span class='cult'>You decide to prepare further before scribing the rune.</span>")
 				return

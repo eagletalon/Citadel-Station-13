@@ -1,0 +1,9 @@
+diff a/code/_onclick/hud/alert.dm b/code/_onclick/hud/alert.dm	(rejected hunks)
+@@ -276,7 +276,6 @@ or shoot a gun to move around via Newton's 3rd Law of Motion."
+ 	START_PROCESSING(SSprocessing, src)
+ 
+ /obj/screen/alert/bloodsense/Destroy()
+-	sacimage = null
+ 	Cviewer = null
+ 	STOP_PROCESSING(SSprocessing, src)
+ 	return ..()

@@ -1,0 +1,73 @@
+diff a/code/datums/antagonists/datum_cult.dm b/code/datums/antagonists/datum_cult.dm	(rejected hunks)
+@@ -2,20 +2,21 @@
+ 	var/datum/action/innate/cultcomm/communion = new
+ 
+ /datum/antagonist/cult/Destroy()
+-	qdel(communion)
++	QDEL_NULL(communion)
+ 	return ..()
+ 
+ /datum/antagonist/cult/proc/add_objectives()
+ 	var/list/target_candidates = list()
+ 	for(var/mob/living/carbon/human/player in GLOB.player_list)
+-		if(player.mind && !is_convertable_to_cult(player) && (player != owner) && isliving(player))
++		if(player.mind && !player.mind.has_antag_datum(ANTAG_DATUM_CULT) && !is_convertable_to_cult(player) && (player != owner) && player.stat != DEAD)
+ 			target_candidates += player.mind
+ 	if(target_candidates.len == 0)
+ 		message_admins("Cult Sacrifice: Could not find unconvertable target, checking for convertable target.")
+ 		for(var/mob/living/carbon/human/player in GLOB.player_list)
+-			if(player.mind && (player != owner) && isliving(player))
++			if(player.mind && !player.mind.has_antag_datum(ANTAG_DATUM_CULT) && (player != owner) && player.stat != DEAD)
+ 				target_candidates += player.mind
+-	if(target_candidates.len > 0)
++	listclearnulls(target_candidates)
++	if(LAZYLEN(target_candidates))
+ 		GLOB.sac_mind = pick(target_candidates)
+ 		if(!GLOB.sac_mind)
+ 			message_admins("Cult Sacrifice: ERROR -  Null target chosen!")
+@@ -33,7 +34,6 @@
+ 		GLOB.sac_complete = TRUE
+ 	SSticker.mode.cult_objectives += "sacrifice"
+ 	SSticker.mode.cult_objectives += "eldergod"
+-	on_gain()
+ 
+ /datum/antagonist/cult/proc/cult_memorization(datum/mind/cult_mind)
+ 	var/mob/living/current = cult_mind.current
+@@ -47,7 +47,8 @@
+ 					explanation = "The veil has already been weakened here, proceed to the final objective."
+ 			if("eldergod")
+ 				explanation = "Summon Nar-Sie by invoking the rune 'Summon Nar-Sie' with nine acolytes on it. You must do this after sacrificing your target."
+-		to_chat(current, "<B>Objective #[obj_count]</B>: [explanation]")
++		if(!silent)
++			to_chat(current, "<B>Objective #[obj_count]</B>: [explanation]")
+ 		cult_mind.memory += "<B>Objective #[obj_count]</B>: [explanation]<BR>"
+ 
+ /datum/antagonist/cult/can_be_owned(datum/mind/new_owner)
+@@ -58,16 +59,16 @@
+ /datum/antagonist/cult/on_gain()
+ 	. = ..()
+ 	var/mob/living/current = owner.current
+-	if(SSticker.mode.cult_objectives.len == 0)
++	if(!LAZYLEN(SSticker.mode.cult_objectives))
+ 		add_objectives()
+-		return
+ 	SSticker.mode.cult += owner // Only add after they've been given objectives
+ 	cult_memorization(owner)
+ 	if(jobban_isbanned(current, ROLE_CULTIST))
+ 		addtimer(CALLBACK(SSticker.mode, /datum/game_mode.proc/replace_jobbaned_player, current, ROLE_CULTIST, ROLE_CULTIST), 0)
+ 	SSticker.mode.update_cult_icons_added(owner)
+-	current.throw_alert("bloodsense", /obj/screen/alert/bloodsense)
+ 	current.log_message("<font color=#960000>Has been converted to the cult of Nar'Sie!</font>", INDIVIDUAL_ATTACK_LOG)
++	if(GLOB.blood_target && GLOB.blood_target_image && current.client)
++		current.client.images += GLOB.blood_target_image
+ 
+ /datum/antagonist/cult/apply_innate_effects(mob/living/mob_override)
+ 	. = ..()
+@@ -79,6 +80,7 @@
+ 	if(!GLOB.cult_mastered)
+ 		current.verbs += /mob/living/proc/cult_master
+ 	communion.Grant(current)
++	current.throw_alert("bloodsense", /obj/screen/alert/bloodsense)
+ 
+ /datum/antagonist/cult/remove_innate_effects(mob/living/mob_override)
+ 	. = ..()

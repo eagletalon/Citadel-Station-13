@@ -1,0 +1,10 @@
+diff a/code/game/gamemodes/cult/ritual.dm b/code/game/gamemodes/cult/ritual.dm	(rejected hunks)
+@@ -200,7 +200,7 @@ This file contains the arcane tome files.
+ 		if(!("eldergod" in SSticker.mode.cult_objectives))
+ 			to_chat(user, "<span class='warning'>Nar-Sie does not wish to be summoned!</span>")
+ 			return
+-		if(GLOB.sac_complete)
++		if(!GLOB.sac_complete)
+ 			to_chat(user, "<span class='warning'>The sacrifice is not complete. The portal would lack the power to open if you tried!</span>")
+ 			return
+ 		if(!SSticker.mode.eldergod)
